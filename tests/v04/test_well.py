@@ -1,8 +1,9 @@
 import json
 from pathlib import Path
 
-from pydantic import BaseModel
 import pytest
+from pydantic import BaseModel
+
 from ome_zarr_models.v04.well import ImageInWell, Well
 
 
