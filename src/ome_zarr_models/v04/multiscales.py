@@ -9,7 +9,7 @@ from pydantic_zarr.v2 import ArraySpec, GroupSpec
 
 from ome_zarr_models.base import Base
 from ome_zarr_models.utils import duplicates
-from ome_zarr_models.v04.axes import Axis, AxisType
+from ome_zarr_models.v04.axes import Axes, AxisType
 from ome_zarr_models.v04.coordinate_transformations import (
     ScaleTransform,
     TranslationTransform,
@@ -21,7 +21,7 @@ from ome_zarr_models.v04.omero import Omero  # noqa: TCH001
 from ome_zarr_models.zarr_utils import get_path
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
+    from collections.abc import Iterable
 
 
 __all__ = ["VALID_NDIM", "Dataset", "Multiscale", "MultiscaleGroup"]
@@ -82,7 +82,7 @@ def _ensure_scale_translation(
     return transforms
 
 
-def _ensure_axis_length(axes: Sequence[Axis]) -> Sequence[Axis]:
+def _ensure_axis_length(axes: Axes) -> Axes:
     """
     Ensures that there are between 2 and 5 axes (inclusive)
     """
@@ -95,7 +95,7 @@ def _ensure_axis_length(axes: Sequence[Axis]) -> Sequence[Axis]:
     return axes
 
 
-def _ensure_axis_names(axes: Sequence[Axis]) -> Sequence[Axis]:
+def _ensure_axis_names(axes: Axes) -> Axes:
     """
     Ensures that the names of the axes are unique.
     """
@@ -109,7 +109,7 @@ def _ensure_axis_names(axes: Sequence[Axis]) -> Sequence[Axis]:
     return axes
 
 
-def _ensure_axis_types(axes: Sequence[Axis]) -> Sequence[Axis]:
+def _ensure_axis_types(axes: Axes) -> Axes:
     """
     Ensures that the following conditions are true:
 
@@ -251,7 +251,7 @@ class Multiscale(Base):
     datasets: tuple[Dataset, ...] = Field(..., min_length=1)
     version: Any | None = None
     axes: Annotated[
-        tuple[Axis, ...],
+        Axes,
         AfterValidator(_ensure_axis_length),
         AfterValidator(_ensure_axis_names),
         AfterValidator(_ensure_axis_types),
