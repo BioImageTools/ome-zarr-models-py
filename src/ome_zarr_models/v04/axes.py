@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from typing import Any, Literal
 
 from ome_zarr_models.base import Base
@@ -20,4 +21,4 @@ class Axis(Base):
     unit: str | Any | None = None
 
 
-Axes = list[Axis]
+Axes = Sequence[Axis]
