@@ -16,7 +16,7 @@ def _unique_items_validator(values: list[T]) -> list[T]:
     return values
 
 
-_AlphaNumericConstraint = StringConstraints()(pattern="[a-zA-Z0-9]*")
+_AlphaNumericConstraint = StringConstraints(pattern="[a-zA-Z0-9]*")
 
 
 def duplicates(values: Iterable[Hashable]) -> dict[Hashable, int]:
