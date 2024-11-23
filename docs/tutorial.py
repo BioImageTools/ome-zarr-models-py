@@ -15,12 +15,12 @@ from ome_zarr_models.v04.coordinate_transformations import (
 # OME-zarr dataset:
 
 group = zarr.open("https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0062A/6001240.zarr")
-ome_zarr_image = Image(group)
+ome_zarr_image = Image.from_zarr(group)
 pprint(ome_zarr_image)
 
 # This image contains both the zarr group, and a model of the multiscales metadata
 
-multiscales_meta = ome_zarr_image.multiscales
+multiscales_meta = ome_zarr_image.attributes.multiscales
 pprint(multiscales_meta)
 
 # ## Updating models
