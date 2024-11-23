@@ -1,8 +1,9 @@
-from typing import Literal
+from collections.abc import Sequence
+from typing import Any, Literal
 
 from ome_zarr_models.base import Base
 
-__all__ = ["AxisType", "Axis"]
+__all__ = ["AxisType", "Axis", "Axes"]
 
 
 AxisType = Literal["space", "time", "channel"]
@@ -17,4 +18,7 @@ class Axis(Base):
 
     name: str
     type: str | None = None
-    unit: str | None = None
+    unit: str | Any | None = None
+
+
+Axes = Sequence[Axis]
