@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Annotated, Literal
 from pydantic import AfterValidator, Field, model_validator
 
 from ome_zarr_models.base import Base
-from ome_zarr_models.v04.multiscales import MultiscaleGroupAttrs
+from ome_zarr_models.v04.image import ImageAttrs
 
 if TYPE_CHECKING:
     from collections.abc import Hashable, Iterable
@@ -126,7 +126,7 @@ class ImageLabel(Base):
         return _parse_imagelabel(self)
 
 
-class GroupAttrs(MultiscaleGroupAttrs):
+class GroupAttrs(ImageAttrs):
     """
     Attributes for a Zarr group that contains `image-label` metadata.
     Inherits from `v04.multiscales.MultiscaleAttrs`.
