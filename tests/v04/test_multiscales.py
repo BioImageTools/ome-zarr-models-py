@@ -3,16 +3,11 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, Any
 
-from tests.v04.conftest import from_array_props, from_arrays
-
-if TYPE_CHECKING:
-    from typing import Literal
-
-
 import numpy as np
 import pytest
 from pydantic import ValidationError
 from pydantic_zarr.v2 import ArraySpec, GroupSpec
+from tests.v04.conftest import from_array_props, from_arrays
 
 from ome_zarr_models.v04.axes import Axis
 from ome_zarr_models.v04.coordinate_transformations import (
@@ -20,12 +15,14 @@ from ome_zarr_models.v04.coordinate_transformations import (
     VectorTranslation,
     _build_transforms,
 )
+from ome_zarr_models.v04.image import Image, ImageAttrs
 from ome_zarr_models.v04.multiscales import (
     Dataset,
     Multiscale,
-    MultiscaleGroup,
-    MultiscaleGroupAttrs,
 )
+
+if TYPE_CHECKING:
+    from typing import Literal
 
 
 @pytest.fixture
@@ -254,7 +251,7 @@ def test_validate_axes_dset_transforms() -> None:
 def test_multiscale_group_datasets_exist(
     default_multiscale: Multiscale,
 ) -> None:
-    group_attrs = MultiscaleGroupAttrs(multiscales=(default_multiscale,))
+    group_attrs = ImageAttrs(multiscales=(default_multiscale,))
     good_items = {
         d.path: ArraySpec(
             shape=(1, 1, 1, 1),
@@ -263,7 +260,7 @@ def test_multiscale_group_datasets_exist(
         )
         for d in default_multiscale.datasets
     }
-    MultiscaleGroup(attributes=group_attrs, members=good_items)
+    Image(attributes=group_attrs, members=good_items)
 
     bad_items = {
         d.path + "x": ArraySpec(
@@ -278,12 +275,12 @@ def test_multiscale_group_datasets_exist(
         ValidationError,
         match="array with that name was found in the hierarchy",
     ):
-        MultiscaleGroup(attributes=group_attrs, members=bad_items)
+        Image(attributes=group_attrs, members=bad_items)
 
 
 def test_multiscale_group_datasets_ndim() -> None:
     """
-    Test that creating a MultiscaleGroup with arrays with mismatched shapes raises
+    Test that creating a Image with arrays with mismatched shapes raises
     an exception
     """
     true_ndim = 2
@@ -330,7 +327,7 @@ def test_multiscale_group_missing_arrays() -> None:
             "not exist in this "
         ),
     ):
-        MultiscaleGroup(**group_model_broken.model_dump())
+        Image(**group_model_broken.model_dump())
 
 
 def test_multiscale_group_ectopic_group() -> None:
@@ -355,7 +352,7 @@ def test_multiscale_group_ectopic_group() -> None:
         ValidationError,
         match=re.escape(f"The node at {array_names[0]} is a group, not an array."),
     ):
-        MultiscaleGroup(**group_model_broken.model_dump())
+        Image(**group_model_broken.model_dump())
 
 
 @pytest.mark.parametrize("store", ["memory"], indirect=True)
@@ -371,7 +368,7 @@ def test_from_zarr_missing_metadata(
         f"Zarr group at {store}://{store_path}://{group.path}."
     )
     with pytest.raises(KeyError, match=match):
-        MultiscaleGroup.from_zarr(group)
+        Image.from_zarr(group)
 
 
 @pytest.mark.parametrize("store", ["memory"], indirect=True)
@@ -400,7 +397,7 @@ def test_from_zarr_missing_array(store: Literal["memory"]) -> None:
         "but no array was found there."
     )
     with pytest.raises(ValueError, match=match):
-        MultiscaleGroup.from_zarr(broken_group)
+        Image.from_zarr(broken_group)
 
 
 @pytest.mark.parametrize("store", ["memory"], indirect=True)
@@ -432,7 +429,7 @@ def test_from_zarr_ectopic_group(store: Literal["memory"]) -> None:
         "but a group was found there instead."
     )
     with pytest.raises(ValueError, match=match):
-        MultiscaleGroup.from_zarr(broken_group)
+        Image.from_zarr(broken_group)
 
 
 @pytest.mark.skip
