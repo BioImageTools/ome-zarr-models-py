@@ -4,6 +4,7 @@ import zarr
 import zarr.storage
 from rich.pretty import pprint
 
+from ome_zarr_models.data import tutorial_data_path
 from ome_zarr_models.v04 import Image
 from ome_zarr_models.v04.coordinate_transformations import (
     VectorTranslation,
@@ -14,8 +15,9 @@ from ome_zarr_models.v04.coordinate_transformations import (
 # We can create an Image model from a zarr group, that points to an
 # OME-zarr dataset:
 
-group = zarr.open("https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0062A/6001240.zarr")
-ome_zarr_image = Image.from_zarr(group)
+print(tutorial_data_path.absolute())
+group = zarr.open(tutorial_data_path)
+ome_zarr_image = Image(group)
 pprint(ome_zarr_image)
 
 # This image contains both the zarr group, and a model of the multiscales metadata
@@ -28,9 +30,10 @@ pprint(multiscales_meta)
 # All the fields in the models can be updated in place. When you do this, any
 # validation on the individual field you are updating will take place.
 #
-# For example, there is no name for the first multiscales entry, so lets add it
+# For example, the name for the first multiscales entry isn't very descriptive,
+# so lets update it
 
-multiscales_meta[0].name = "The first multiscales entry"
+multiscales_meta[0].name = "A cat"
 pprint(multiscales_meta)
 
 # One constraint in the OME-zarr spec is that the coordinate transforms have to be a
