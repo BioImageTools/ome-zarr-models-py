@@ -1,11 +1,11 @@
 # # Tutorial
 
+import matplotlib.pyplot as plt
+import pydantic
 import zarr
 import zarr.storage
 from rich.pretty import pprint
 
-import matplotlib.pyplot as plt
-import pydantic
 from ome_zarr_models.data import tutorial_data_path
 from ome_zarr_models.v04 import Image
 from ome_zarr_models.v04.coordinate_transformations import (

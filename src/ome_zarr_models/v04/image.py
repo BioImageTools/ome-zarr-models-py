@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Self
-
 import zarr.errors
 from pydantic import Field, model_validator
 from pydantic_zarr.v2 import ArraySpec, GroupSpec
@@ -13,7 +11,7 @@ from ome_zarr_models.zarr_utils import get_path
 
 # Image is imported to the `ome_zarr_py.v04` namespace, so not
 # listed here
-__all__ = ["ImageAttrs", "Image"]
+__all__ = ["Image", "ImageAttrs"]
 
 
 def _check_arrays_compatible(data: Image) -> Image:
