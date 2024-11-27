@@ -13,7 +13,7 @@ from ome_zarr_models.zarr_utils import get_path
 
 # Image is imported to the `ome_zarr_py.v04` namespace, so not
 # listed here
-__all__ = ["ImageAttrs"]
+__all__ = ["ImageAttrs", "Image"]
 
 
 def _check_arrays_compatible(data: Image) -> Image:
@@ -73,7 +73,7 @@ class ImageAttrs(Base):
     omero: Omero | None = None
 
 
-class ImageSpec(GroupSpec[ImageAttrs, ArraySpec | GroupSpec]):
+class _ImageSpec(GroupSpec[ImageAttrs, ArraySpec | GroupSpec]):
     _check_arrays_compatible = model_validator(mode="after")(_check_arrays_compatible)
 
 
@@ -86,7 +86,7 @@ class Image:
         self._spec = self._get_spec(group)
         self._group = group
 
-    def _get_spec(self, node: zarr.Group) -> ImageSpec:
+    def _get_spec(self, node: zarr.Group) -> _ImageSpec:
         """
         Create an instance of an OME-zarr image from a `zarr.Group`.
 
@@ -135,7 +135,7 @@ class Image:
         guess_inferred_members = guess.model_copy(
             update={"members": members_normalized.members}
         )
-        return ImageSpec(**guess_inferred_members.model_dump())
+        return _ImageSpec(**guess_inferred_members.model_dump())
 
     @property
     def arrays(self) -> zarr.Group:
