@@ -80,6 +80,11 @@ class _ImageSpec(GroupSpec[ImageAttrs, ArraySpec | GroupSpec]):
 class Image:
     """
     A multiscale zarr group.
+
+    Parameters
+    ----------
+    group :
+        Group to create object from.
     """
 
     def __init__(self, group: zarr.Group) -> None:
