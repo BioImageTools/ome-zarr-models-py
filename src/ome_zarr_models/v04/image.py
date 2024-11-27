@@ -73,15 +73,20 @@ class ImageAttrs(Base):
     omero: Omero | None = None
 
 
-class Image(GroupSpec[ImageAttrs, ArraySpec | GroupSpec]):
+class ImageSpec(GroupSpec[ImageAttrs, ArraySpec | GroupSpec]):
+    _check_arrays_compatible = model_validator(mode="after")(_check_arrays_compatible)
+
+
+class Image:
     """
     A multiscale zarr group.
     """
 
-    _check_arrays_compatible = model_validator(mode="after")(_check_arrays_compatible)
+    def __init__(self, group: zarr.Group) -> None:
+        self._spec = self._get_spec(group)
+        self._group = group
 
-    @classmethod
-    def from_zarr(cls, node: zarr.Group) -> Self:
+    def _get_spec(self, node: zarr.Group) -> ImageSpec:
         """
         Create an instance of an OME-zarr image from a `zarr.Group`.
 
@@ -130,18 +135,25 @@ class Image(GroupSpec[ImageAttrs, ArraySpec | GroupSpec]):
         guess_inferred_members = guess.model_copy(
             update={"members": members_normalized.members}
         )
-        return cls(**guess_inferred_members.model_dump())
+        return ImageSpec(**guess_inferred_members.model_dump())
+
+    @property
+    def arrays(self) -> zarr.Group:
+        """
+        Multiscale array group in this image.
+        """
+        return self._group
 
     @property
     def multiscales(self) -> Multiscales:
         """
         Multiscales metadata model.
         """
-        return self.attributes.multiscales
+        return self._spec.attributes.multiscales
 
     @property
     def omero(self) -> Omero | None:
         """
         omero metadata model (if present).
         """
-        return self.attributes.omero
+        return self._spec.attributes.omero
