@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Self
-
 import zarr.errors
 from pydantic import Field, model_validator
 from pydantic_zarr.v2 import ArraySpec, GroupSpec
@@ -13,7 +11,7 @@ from ome_zarr_models.zarr_utils import get_path
 
 # Image is imported to the `ome_zarr_py.v04` namespace, so not
 # listed here
-__all__ = ["ImageAttrs"]
+__all__ = ["Image", "ImageAttrs"]
 
 
 def _check_arrays_compatible(data: Image) -> Image:
@@ -73,15 +71,25 @@ class ImageAttrs(Base):
     omero: Omero | None = None
 
 
-class Image(GroupSpec[ImageAttrs, ArraySpec | GroupSpec]):
-    """
-    A multiscale zarr group.
-    """
-
+class _ImageSpec(GroupSpec[ImageAttrs, ArraySpec | GroupSpec]):
     _check_arrays_compatible = model_validator(mode="after")(_check_arrays_compatible)
 
-    @classmethod
-    def from_zarr(cls, node: zarr.Group) -> Self:
+
+class Image:
+    """
+    A multiscale zarr group.
+
+    Parameters
+    ----------
+    group :
+        Group to create object from.
+    """
+
+    def __init__(self, group: zarr.Group) -> None:
+        self._spec = self._get_spec(group)
+        self._group = group
+
+    def _get_spec(self, node: zarr.Group) -> _ImageSpec:
         """
         Create an instance of an OME-zarr image from a `zarr.Group`.
 
@@ -130,18 +138,25 @@ class Image(GroupSpec[ImageAttrs, ArraySpec | GroupSpec]):
         guess_inferred_members = guess.model_copy(
             update={"members": members_normalized.members}
         )
-        return cls(**guess_inferred_members.model_dump())
+        return _ImageSpec(**guess_inferred_members.model_dump())
+
+    @property
+    def arrays(self) -> zarr.Group:
+        """
+        Multiscale array group in this image.
+        """
+        return self._group
 
     @property
     def multiscales(self) -> Multiscales:
         """
         Multiscales metadata model.
         """
-        return self.attributes.multiscales
+        return self._spec.attributes.multiscales
 
     @property
     def omero(self) -> Omero | None:
         """
         omero metadata model (if present).
         """
-        return self.attributes.omero
+        return self._spec.attributes.omero

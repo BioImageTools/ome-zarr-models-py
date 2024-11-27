@@ -5,8 +5,8 @@ theme:
 
 plugins:
   - mkdocs-jupyter:
-      execute: false
-      allow_errors: true
+      execute: true
+      allow_errors: false
   - mkdocstrings:
       handlers:
         python:
