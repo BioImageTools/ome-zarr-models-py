@@ -2,10 +2,10 @@ from pathlib import Path
 
 from ome_zarr_models.v04.bioformats2raw import BioFormats2RawAttrs
 from ome_zarr_models.v04.plate import (
-    AcquisitionInPlate,
-    ColumnInPlate,
+    Acquisition,
+    Column,
     Plate,
-    RowInPlate,
+    Row,
     WellInPlate,
 )
 
@@ -18,14 +18,12 @@ def test_bioformats2raw_exmaple_json():
         bioformats2raw_layout=3,
         plate=Plate(
             acquisitions=[
-                AcquisitionInPlate(
-                    id=0, maximumfieldcount=None, name=None, description=None
-                )
+                Acquisition(id=0, maximumfieldcount=None, name=None, description=None)
             ],
-            columns=[ColumnInPlate(name="1")],
+            columns=[Column(name="1")],
             field_count=1,
             name="Plate Name 0",
-            rows=[RowInPlate(name="A")],
+            rows=[Row(name="A")],
             version="0.4",
             wells=[WellInPlate(path="A/1", rowIndex=0, columnIndex=0)],
         ),
