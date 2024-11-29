@@ -32,3 +32,16 @@ This package is designed with the following guiding principles:
 - Array reading and writing operations are out of scope
 
 We are trying to make this as usable and useful as possible while still complying with the OME-zarr specification.
+
+## Roadmap
+
+This is our draft roadmap.
+
+### v1
+
+- A working validator for OME-zarr 0.4 datasets
+
+### v2
+
+- Ability to write metadata after creation/modification
+- A working validator for OME-zarr 0.5 datasets
