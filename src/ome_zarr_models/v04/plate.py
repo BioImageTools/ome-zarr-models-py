@@ -1,3 +1,7 @@
+"""
+For reference, see the [plate section of the OME-zarr specification](https://ngff.openmicroscopy.org/0.4/index.html#plate-md).
+"""
+
 from collections import Counter
 from typing import Annotated, Self
 
@@ -6,7 +10,6 @@ from pydantic import (
     Field,
     NonNegativeInt,
     PositiveInt,
-    ValidationError,
     model_validator,
 )
 
@@ -24,29 +27,23 @@ __all__ = [
 
 class Acquisition(Base):
     """
-    Model a single acquisition.
-
-    References
-    ----------
-    https://ngff.openmicroscopy.org/0.4/#plate-md.
+    A single acquisition.
     """
 
     id: NonNegativeInt = Field(description="A unique identifier.")
     name: str | None = None
     maximumfieldcount: PositiveInt | None = Field(
         default=None,
-        description=("Maximum number of fields of view for the acquisition"),
+        description="Maximum number of fields of view for the acquisition",
     )
     description: str | None = None
+    starttime: int | None = None
+    endtime: int | None = None
 
 
 class WellInPlate(Base):
     """
-    Model for an element of `Plate.wells`.
-
-    References
-    ----------
-    https://ngff.openmicroscopy.org/0.4/#plate-md
+    A single well within a plate.
     """
 
     # TODO: validate
@@ -58,11 +55,7 @@ class WellInPlate(Base):
 
 class Column(Base):
     """
-    Model for single column.
-
-    References
-    ----------
-    https://ngff.openmicroscopy.org/0.4/#plate-md
+    A single column within a well.
     """
 
     name: Annotated[str, _AlphaNumericConstraint]
@@ -70,11 +63,7 @@ class Column(Base):
 
 class Row(Base):
     """
-    A single row.
-
-    References
-    ----------
-    https://ngff.openmicroscopy.org/0.4/#plate-md
+    A single row within a well.
     """
 
     name: Annotated[str, _AlphaNumericConstraint]
@@ -82,20 +71,16 @@ class Row(Base):
 
 class Plate(Base):
     """
-    Model a single plate.
-
-    References
-    ----------
-    https://ngff.openmicroscopy.org/0.4/#plate-md
+    A single plate.
     """
 
     acquisitions: list[Acquisition] | None = None
     columns: Annotated[list[Column], AfterValidator(_unique_items_validator)]
     field_count: PositiveInt | None = Field(
-        default=None, description="Maimum number of fields per view across wells"
+        default=None, description="Maximum number of fields per view across wells"
     )
-    name: str | None = None
-    rows: list[Row]
+    name: str | None = Field(default=None, description="Plate name")
+    rows: Annotated[list[Row], AfterValidator(_unique_items_validator)]
     # version will become required in 0.5
     version: str | None = Field(None, description="Version of the plate specification")
     wells: list[WellInPlate]
@@ -117,12 +102,16 @@ class Plate(Base):
 
             row, column = path.split("/")
             if row not in row_names:
-                errors.append(f"row in well path '{path}' is not in list of rows")
+                errors.append(
+                    f"row '{row}' in well path '{path}' is not in list of rows"
+                )
             if column not in column_names:
-                errors.append(f"column in well path '{path}' is not in list of columns")
+                errors.append(
+                    f"column '{column}' in well path '{path}' is not in list of columns"
+                )
 
         if len(errors) > 0:
             errors_joined = "\n".join(errors)
-            raise ValidationError(f"Error validating plate metadata:\n{errors_joined}")
+            raise ValueError(f"Error validating plate metadata:\n{errors_joined}")
 
         return self
