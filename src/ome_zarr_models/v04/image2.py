@@ -1,7 +1,8 @@
 from typing import Self
-from pydantic import BaseModel, ConfigDict, model_validator
+
 import zarr
-from ome_zarr_models.base import Base
+from pydantic import BaseModel, ConfigDict, model_validator
+
 from ome_zarr_models.v04.image import ImageAttrs
 
 
@@ -12,7 +13,7 @@ class Image2(BaseModel):
     This is represented by a single zarr Group. To get the OME-zarr
     metadata, use the `.attributes` property.
 
-    To modify the attrbiutes, get a copy of them using the `.attributes`
+    To modify the attributes, get a copy of them using the `.attributes`
     property, modify them, and then set the attributes property with
     the modified version.
     """

@@ -1,8 +1,8 @@
 # # Tutorial
 
-from pydantic import ValidationError
 import zarr
 import zarr.storage
+from pydantic import ValidationError
 from rich.pretty import pprint
 
 from ome_zarr_models.data import tutorial_data_path
@@ -56,7 +56,7 @@ except ValidationError as e:
 # This means validation happens early, allowing you to catch errors
 # before getting too far.
 
-# ## Saving modified metadta
+# ## Saving modified metadata
 #
 # Once we've modified the metadata, we can save it back to the zarr group by
 # assigning to the `.attributes` property.
