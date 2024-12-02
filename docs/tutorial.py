@@ -1,11 +1,12 @@
 # # Tutorial
 
+from pydantic import ValidationError
 import zarr
 import zarr.storage
 from rich.pretty import pprint
 
 from ome_zarr_models.data import tutorial_data_path
-from ome_zarr_models.v04 import Image
+from ome_zarr_models.v04 import Image2
 from ome_zarr_models.v04.coordinate_transformations import (
     VectorTranslation,
 )
@@ -17,13 +18,17 @@ from ome_zarr_models.v04.coordinate_transformations import (
 
 print(tutorial_data_path.absolute())
 group = zarr.open(tutorial_data_path)
-ome_zarr_image = Image(group)
+ome_zarr_image = Image2(group=group)
 pprint(ome_zarr_image)
 
-# This image contains both the zarr group, and a model of the multiscales metadata
+# This image contains only the zarr group. To get a copy of the attributes,
+# we can access the `.attributes` property
 
-multiscales_meta = ome_zarr_image.attributes.multiscales
-pprint(multiscales_meta)
+metadata = ome_zarr_image.attributes
+pprint(metadata)
+
+# Note that this is a copy of the metadata, and editing it will not automatically
+# update the attributes stored in the zarr group. We will see how to do this later.
 
 # ## Updating models
 #
@@ -33,27 +38,38 @@ pprint(multiscales_meta)
 # For example, the name for the first multiscales entry isn't very descriptive,
 # so lets update it
 
-multiscales_meta[0].name = "A cat"
-pprint(multiscales_meta)
+metadata.multiscales[0].name = "A cat"
+pprint(metadata.multiscales)
 
 # One constraint in the OME-zarr spec is that the coordinate transforms have to be a
 # scale, or a scale then translation (strictly in that order). So if we try and make a
 # transformation just a translation, it will raise an error.
 
-multiscales_meta[0].datasets[0].coordinateTransformations = VectorTranslation(
-    type="translation", translation=[1, 2, 3]
-)
+try:
+    metadata.multiscales[0].datasets[0].coordinateTransformations = VectorTranslation(
+        type="translation", translation=[1, 2, 3]
+    )
+except ValidationError as e:
+    pprint(e)
 
 
 # This means validation happens early, allowing you to catch errors
 # before getting too far.
+
+# ## Saving modified metadta
+#
+# Once we've modified the metadata, we can save it back to the zarr group by
+# assigning to the `.attributes` property.
+
+ome_zarr_image.attributes = metadata
+pprint(ome_zarr_image.group.attrs.asdict())
 
 # ## Accessing data
 #
 # Although these models do not handle reading or writing data, they do expose the zarr
 # arrays.
 
-zarr_arr = ome_zarr_image.group[multiscales_meta[0].datasets[0].path]
+zarr_arr = ome_zarr_image.group[metadata.multiscales[0].datasets[0].path]
 pprint(zarr_arr)
 
 # ## Not using validation
