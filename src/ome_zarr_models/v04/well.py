@@ -6,11 +6,13 @@ from collections import defaultdict
 from typing import Annotated, Literal
 
 from pydantic import AfterValidator, Field
+from pydantic_zarr.v2 import ArraySpec, GroupSpec
 
 from ome_zarr_models._utils import _AlphaNumericConstraint, _unique_items_validator
 from ome_zarr_models.base import Base
 
-__all__ = ["Well", "WellImage"]
+# WellGroup is defined one level higher
+__all__ = ["Well", "WellAttrs", "WellImage"]
 
 
 class WellImage(Base):
@@ -58,3 +60,15 @@ class Well(Base):
                 )
             acquisition_dict[image.acquisition].append(image.path)
         return dict(acquisition_dict)
+
+
+class WellAttrs(Base):
+    """
+    Attributes for a well group.
+    """
+
+    well: Well
+
+
+class WellGroup(GroupSpec[WellAttrs, ArraySpec | GroupSpec]):
+    pass
