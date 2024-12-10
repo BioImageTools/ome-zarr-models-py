@@ -95,7 +95,9 @@ skip-magic-trailing-comma = false # default is false
 [tool.mypy]
 
 strict = true
+warn_unreachable = true
 plugins = ['pydantic.mypy']
+enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
 
 [[tool.mypy.overrides]]
 module = ["zarr.*", "pydantic_zarr.*"]
