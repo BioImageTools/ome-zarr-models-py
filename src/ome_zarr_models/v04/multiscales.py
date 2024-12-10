@@ -87,7 +87,7 @@ def _ensure_scale_translation(
 
     maybe_scale = transforms[0]
     if maybe_scale.type != "scale":
-        msg = (
+        msg = (  # type: ignore[unreachable]
             "The first element of `coordinateTransformations` must be a scale "
             f"transform. Got {maybe_scale} instead."
         )
@@ -95,7 +95,7 @@ def _ensure_scale_translation(
     if len(transforms) == 2:
         maybe_trans = transforms[1]
         if (maybe_trans.type) != "translation":
-            msg = (
+            msg = (  # type: ignore[unreachable]
                 "The second element of `coordinateTransformations` must be a "
                 f"translation transform. Got {maybe_trans} instead."
             )
