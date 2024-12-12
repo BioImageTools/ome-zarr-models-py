@@ -38,8 +38,8 @@ nav:
   - Contributing: contributing.md
   - API reference:
       - v04:
-          - api/v04/top_level.md
-          - api/v04/other.md
+          - api/v04/datasets.md
+          - api/v04/metadata.md
 
 watch:
   - src

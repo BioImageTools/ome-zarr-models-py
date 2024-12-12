@@ -1,6 +1,6 @@
-# Other models
+# Metadata models
 
-These are models that live further down the hierarchy.
+These are models of the metadata contained within OME-zarr datasets.
 
 ## axes
 
