@@ -108,5 +108,4 @@ def test_example_hcs() -> None:
             name="TBD",
             version="0.4",
         ),
-        labels=None,
     )

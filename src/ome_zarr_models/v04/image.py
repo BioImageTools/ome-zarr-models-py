@@ -8,6 +8,7 @@ from pydantic_zarr.v2 import ArraySpec, GroupSpec
 
 from ome_zarr_models._utils import get_store_path
 from ome_zarr_models.v04.base import Base
+from ome_zarr_models.v04.labels import Labels
 from ome_zarr_models.v04.multiscales import Multiscale
 from ome_zarr_models.v04.omero import Omero
 
@@ -71,7 +72,6 @@ class ImageAttrs(Base):
         min_length=1,
     )
     omero: Omero | None = None
-    labels: list[str] | None = None
 
 
 class Image(GroupSpec[ImageAttrs, ArraySpec | GroupSpec]):
@@ -128,9 +128,30 @@ class Image(GroupSpec[ImageAttrs, ArraySpec | GroupSpec]):
                     )
                     raise ValueError(msg) from e
                 members_tree_flat["/" + dataset.path] = array_spec
+
+        try:
+            labels_group = zarr.open_group(store=group.store, path="labels", mode="r")
+            members_tree_flat["/labels"] = GroupSpec.from_zarr(labels_group)
+        except zarr.errors.GroupNotFoundError:
+            pass
+
         members_normalized = GroupSpec.from_flat(members_tree_flat)
 
         guess_inferred_members = guess.model_copy(
             update={"members": members_normalized.members}
         )
         return cls(**guess_inferred_members.model_dump())
+
+    @property
+    def labels(self) -> Labels | None:
+        """
+        Any labels datasets contained in this image group.
+
+        Returns None if no labels are present.
+        """
+        if "labels" not in self.members:
+            return None
+
+        lables_group = self.members["labels"]
+
+        return Labels(attributes=lables_group.attributes, members=lables_group.members)
