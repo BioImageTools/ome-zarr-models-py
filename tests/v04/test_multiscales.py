@@ -273,7 +273,7 @@ def test_transform_invalid_second_element(
         match="The second element of `coordinateTransformations` "
         "must be a translation transform",
     ):
-        Dataset(path="foo", coordinateTransformations=transforms)  # type: ignore[arg-type]
+        Dataset(path="foo", coordinateTransformations=transforms)
 
 
 def test_validate_axes_top_transforms() -> None:

@@ -38,3 +38,12 @@ repos:
     rev: 0.7.19 # 0.7.19
     hooks:
     - id: mdformat
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: f56614daa94d5cd733d3b7004c5df9caad267b4a # 1.13.0
+    hooks:
+    -   id: mypy
+        additional_dependencies:
+        - pydantic
+        - pytest
+        - pydantic-zarr
