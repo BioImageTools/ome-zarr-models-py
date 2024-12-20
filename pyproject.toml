@@ -112,5 +112,6 @@ addopts = [
     "--strict-markers",
     "--cov",
     "--cov-report=xml",
+    "-vv",
 ]
 filterwarnings = ["error"]

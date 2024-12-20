@@ -10,10 +10,6 @@ These are models of the metadata contained within OME-zarr datasets.
 
 ::: ome_zarr_models.v04.coordinate_transformations
 
-## multiscales
-
-::: ome_zarr_models.v04.multiscales
-
 ## hcs
 
 ::: ome_zarr_models.v04.hcs
@@ -25,6 +21,14 @@ These are models of the metadata contained within OME-zarr datasets.
 ## image_label
 
 ::: ome_zarr_models.v04.image_label
+
+## labels
+
+::: ome_zarr_models.v04.labels
+
+## multiscales
+
+::: ome_zarr_models.v04.multiscales
 
 ## omero
 
